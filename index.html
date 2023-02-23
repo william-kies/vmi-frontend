@@ -1,0 +1,73 @@
+<html>
+    <body>
+
+        <form action="/">
+            <input id="email" type="text" value="" />
+            <input id="nom" type="text" value="" />
+            <input id="prenom" type="text" value="" />
+        </form>
+
+        <pre id='json'></pre>
+
+        <script type="text/javascript">
+            
+            class State {
+                // Le constructeur prend un objet initialState en paramètre et initialise la propriété state avec cet objet. 
+                // Il initialise également la propriété callbacks comme un tableau vide qui sera utilisé pour stocker les fonctions de rappel.
+                constructor(initialState) {
+                    this.state = initialState;
+                    this.callbacks = [];
+                }
+
+                // La méthode getState retourne l'état courant de l'objet State.
+                getState() {
+                    return(this.state);
+                }
+
+                // La méthode setState prend un objet newState en paramètre et met à jour l'objet state en fusionnant newState à l'aide de l'opérateur de propagation (...). 
+                // Ensuite, la méthode appelle toutes les fonctions de rappel stockées dans le tableau callbacks avec le nouvel état courant comme argument.
+                setState(newState) {
+                    this.state = { ...this.state, ...newState };
+                    this.callbacks.forEach(callback => callback(this.state));
+                }
+
+                // La méthode onChange prend une fonction de rappel callback en paramètre et l'ajoute à la fin du tableau callbacks.
+                // Cette fonction sera appelée à chaque fois que la méthode setState sera appelée pour mettre à jour l'état de l'objet State.
+                onChange(callback) {
+                    this.callbacks.push(callback);
+                }
+            }
+            
+            /* DO NOT CHANGE ANYTHING UNDER THIS LINE */
+            const initialState = {
+                email: "david@knx-lab.com",
+                nom: "Quenet",
+                prenom: "David"
+            }
+            var state = new State(initialState);
+
+            ['email', 'prenom', 'nom'].forEach(key => {
+                const htmlElement = document.getElementById(key);
+                htmlElement.value = initialState[key];
+                htmlElement.addEventListener('input', () => {
+                    const newState = {};
+                    newState[key] = htmlElement.value;
+                    state.setState(newState)
+                });
+
+            })
+
+            const jsonHtmlElement = document.getElementById("json");
+            jsonHtmlElement.innerHTML = JSON.stringify(state.getState(), null, 4);
+            state.onChange(state => {
+                jsonHtmlElement.innerHTML = JSON.stringify(state, null, 4);
+            });
+            
+            /* Do not remove this */
+            state.onChange(state => {
+                console.log(state);
+            });
+
+        </script>
+    </body>
+</html>
